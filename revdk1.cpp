@@ -1350,7 +1350,7 @@ ai_state state={0,1,-1,-1};
 		for(uint k=128;k>0;k>>=1) {
 			state=a_step1(state,byte&k);
 			if(state.res!=-1)
-				//out_i235[j++]=Dict_i235+state.p;
+				out_i235[j++]=Dict_i235+state.p;
 				rand_test[j++]=state.p;
 		}
 	}
@@ -1690,8 +1690,8 @@ int k[20]={0,1,21}; //numbers which are not delimiters, the last = biggest delim
 int kmax=3,Lmin=3; //number of elements in the array k; length of the shortest codeword
 
 void gen_reverse() {
-int L,n,i,j,L1_long=-1,L1_long_prev=-1,t=2;
-uint seq=0,s=0;
+    int L,n,i,j,L1_long=-1,L1_long_prev=-1,t=2;
+    uint seq=0,s=0;
 	for(L=3,n=0;L<Lmax+8 && n<=max_i235;L++) {
 		nl[L]=n;
 		//cout<<"L="<<L-1<<"; Cn="<<n<<" s="<<s<<"\n";
@@ -1800,7 +1800,78 @@ string word;
 	file.close();
 }
 
+void createBinaryCode() {
+  FILE *image;
+  FILE *txt;
+  int byte;
+  image = fopen("1.png","rb");
+  txt = fopen("out.txt", "w");
+  if (image != nullptr) {
+    byte = fgetc(image);
+    while (byte != EOF)
+    {
+      for(int i=0;i<8;i++)
+      {
+        if(byte&(1<<(7-i)))
+        {
+          fputc('1', txt);
+        }
+        else
+        {
+          fputc('0', txt);
+        }
+      }
+      //fputc(' ', txt);
+      byte = fgetc(image);
+    }
+  }
+  else {
+    cout << "Cannot open file\n";
+  }
+  fclose(image);
+  fclose(txt);
+}
+
+char byteFromText(int* text) {
+    char result=0;
+      for(int i=0;i<8;i++)
+      {
+        if(text[i]=='1')
+        {
+          result |= (1<< (7-i) );
+        }
+      }
+      return result;
+}
+
+void createImage() {
+    FILE* txt = fopen("out.txt", "r");
+    FILE* image = fopen("res.bmp", "wb");
+    int sym[8], c;
+    if (txt != nullptr) {
+        for (int j = 0; j < 8; j++){
+            c = fgetc(txt);
+            if (c == EOF)
+                break;
+            sym[j] = c;
+        }
+
+        while (c != EOF) {
+            fputc(byteFromText(sym), image);
+            for (int j = 0; j < 8; j++){
+                c = fgetc(txt);
+                if (c == EOF)
+                    break;
+                sym[j] = c;
+            }
+        }
+    }
+    fclose(image);
+  fclose(txt);
+}
 int main() {
+    createBinaryCode();
+    createImage();
 	int scdc_L=0;
 	int ilen=1000;
 	double harm=0,u=0,su=100;
@@ -1822,18 +1893,13 @@ int main() {
 
 	text_to_ranks(i235_map_sorted,fname,ranks);	// generate the array of word indices
 
-	for (auto it = i235_map_sorted.begin(); it !=i235_map_sorted.end(); it++) {
+	/*for (auto it = i235_map_sorted.begin(); it !=i235_map_sorted.end(); it++) {
 		cout << it->first <<  ' ' << it->second << endl;
-	}
-
-	/*for (auto rank : ranks) {
-		cout << rank << endl;
 	}*/
 
-
-
 	encodeI235(Nwords,ranks);					// generate the R2x code
-	//	decodeI235_1(ilen+1);
+		//decodeI235_1(ilen+1);
+
 	cout <<"size:"<<size<<"different words:"<<diff_words<<"\n"<<"I235 bytes: "<<cur_byte<<", I235 av codeword length: "<<(float)cur_byte*8/Nwords<<"; entropy="<<entropy<<"\n";
 	create_tables();
 	scdc_L=rpbc_encode(Nwords,ranks,codes_scdc);
@@ -1852,7 +1918,8 @@ int main() {
 	cout<<"decode_SCDC time: "<<(float)sums<<" scdc_L="<<scdc_L;
 	cout/*<<" decode_C_fast time: "<<(float)sumd/tfreq.QuadPart*/<<" decode_I_fast time: "<<(float)sumi<<"\n";
 	//i235_test(Nwords,fname);
-	cout<<"\n uu="<<uu*2<<u<<"\n";
+	cout<<"uu="<<uu*2<<' '<<u<<"\n";
+	cout << *out235 << endl;
 	getch();
 }
 
