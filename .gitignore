@@ -1,0 +1,7 @@
+*.txt
+*.exe
+*.o
+*.out
+bin/
+gen/
+out/
