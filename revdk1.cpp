@@ -1009,7 +1009,7 @@ void full_Fib3_decode() {
 
 void dic_to_file() {
 fstream out;
-	out.open("out.txt", ios::out);
+	out.open("kjv_formatted_fin", ios::out);
 	for(int i=0;i<300000;i++)
 		out<<dictionary[decoded_fib[i]]<<" ";
 	out.close();
@@ -1227,7 +1227,7 @@ dic_size_scdc=i;
 }
 
 void text_to_ranks(map<string,int> dic_map,const char* file_name,unsigned int* ranks){
-int i=0,j=0;
+int i=0,j=0, len=0;
 string word;
 char x;
 	for(int i=0;i<diff_words;i++)
@@ -1238,6 +1238,7 @@ char x;
 			file>>word;
 			if(dic_map.find(word)!=dic_map.end()) {
 				ranks[i++]=dic_map[word];
+				len++;
 			}else
 				i=i;
 			if(i>=2 && ranks[i-2]==0) {
@@ -1252,6 +1253,9 @@ char x;
 
 	//cout<<"rank["<<rank_after0<<"]="<<_0ranks[rank_after0]<<"\n ";
 	//fout.close();
+	for(int i=0;i<len;i++) {
+        cout << ranks[i] << ' ';
+	}
 	cout<<"Text to ranks done";
 	Nwords=i;
 }
@@ -1800,12 +1804,12 @@ string word;
 	file.close();
 }
 
-void createBinaryCode() {
+void createBinaryCode(string t) {
   FILE *image;
   FILE *txt;
   int byte;
-  image = fopen("1.png","rb");
-  txt = fopen("out.txt", "w");
+  image = fopen((t+".bmp").c_str(),"rb");
+  txt = fopen(("out"+t+".txt").c_str(), "w");
   if (image != nullptr) {
     byte = fgetc(image);
     while (byte != EOF)
@@ -1820,9 +1824,9 @@ void createBinaryCode() {
         {
           fputc('0', txt);
         }
+
       }
-      //fputc(' ', txt);
-      byte = fgetc(image);
+
     }
   }
   else {
@@ -1844,8 +1848,8 @@ char byteFromText(int* text) {
       return result;
 }
 
-void createImage() {
-    FILE* txt = fopen("out.txt", "r");
+void createImage(string t) {
+    FILE* txt = fopen(("out"+t+".txt").c_str(), "r");
     FILE* image = fopen("res.bmp", "wb");
     int sym[8], c;
     if (txt != nullptr) {
@@ -1870,13 +1874,14 @@ void createImage() {
   fclose(txt);
 }
 int main() {
-    createBinaryCode();
-    createImage();
+    //createBinaryCode("7");
+    //createImage("1");
 	int scdc_L=0;
 	int ilen=1000;
 	double harm=0,u=0,su=100;
 	unsigned int i, j, maxi4 = 100000, iter = 100, uu = 0, size, t, v, min_i, min_j, min_x, min_z, min_y;
-	char* fname="kjv_true_formatted.txt";
+	//char* fname="kjv_true_formatted.txt";
+	char* fname="out8.txt";
 		QueryPerformanceFrequency(&tfreq);
 		size = word_frequences(fname);		// get the word frequences in the text
 		gen_reverse();		// generate the reverse multidelimiter codeword set
@@ -1893,9 +1898,9 @@ int main() {
 
 	text_to_ranks(i235_map_sorted,fname,ranks);	// generate the array of word indices
 
-	/*for (auto it = i235_map_sorted.begin(); it !=i235_map_sorted.end(); it++) {
+	for (auto it = i235_map_sorted.begin(); it !=i235_map_sorted.end(); it++) {
 		cout << it->first <<  ' ' << it->second << endl;
-	}*/
+	}
 
 	encodeI235(Nwords,ranks);					// generate the R2x code
 		//decodeI235_1(ilen+1);
