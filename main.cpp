@@ -1254,9 +1254,9 @@ char x;
 
 	//cout<<"rank["<<rank_after0<<"]="<<_0ranks[rank_after0]<<"\n ";
 	//fout.close();
-	for(int i=0;i<len;i++) {
+	/*for(int i=0;i<len;i++) {
         cout << ranks[i] << ' ';
-	}
+	}*/
 	cout<<"Text to ranks done";
 	Nwords=i;
 }
@@ -1807,13 +1807,12 @@ string word;
 
 
 
-void process() {
+void process(char* fname) {
     int scdc_L=0;
 	int ilen=1000;
 	double harm=0,u=0,su=100;
 	unsigned int i, j, maxi4 = 100000, iter = 100, uu = 0, size, t, v, min_i, min_j, min_x, min_z, min_y;
 	//char* fname="kjv_true_formatted.txt";
-	char* fname="out8.txt";
 		QueryPerformanceFrequency(&tfreq);
 		size = word_frequences(fname);		// get the word frequences in the text
 		gen_reverse();		// generate the reverse multidelimiter codeword set
@@ -1830,9 +1829,9 @@ void process() {
 
 	text_to_ranks(i235_map_sorted,fname,ranks);	// generate the array of word indices
 
-	for (auto it = i235_map_sorted.begin(); it !=i235_map_sorted.end(); it++) {
+	/*for (auto it = i235_map_sorted.begin(); it !=i235_map_sorted.end(); it++) {
 		cout << it->first <<  ' ' << it->second << endl;
-	}
+	}*/
 
 	encodeI235(Nwords,ranks);					// generate the R2x code
 		//decodeI235_1(ilen+1);
@@ -1862,9 +1861,10 @@ void process() {
 
 int main() {
     image im;
-    im.createBinaryCode("2");
-    im.createImage("2");
-    //process();
+    string num = "1";
+    im.createBinaryCodeDiffs(num);
+    im.createImageDiffs(num);
+    process("out1.txt");
 }
 
 
