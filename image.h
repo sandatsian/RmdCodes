@@ -7,9 +7,10 @@ private:
 public:
     void createBinaryCode(string t);
     void createBinaryCodeDiffs(string t);
-    char byteFromText(int* text);
-    char byteFromTextDiffs(int* text, int num);
+    int byteFromText(int* text);
+    int byteFromTextDiffs(int* text, int num);
     void createImage(string t);
     void createImageDiffs(string t);
     void putToTxt(int, FILE*);
+    void putToTxtDiffs(int, FILE*);
 };

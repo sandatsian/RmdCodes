@@ -1861,10 +1861,12 @@ void process(char* fname) {
 
 int main() {
     image im;
-    string num = "1";
+    string num = "3";
+    //im.createBinaryCode(num);
+    //im.createImage(num);
     im.createBinaryCodeDiffs(num);
     im.createImageDiffs(num);
-    process("out1.txt");
+    process("out3.txt");
 }
 
 
