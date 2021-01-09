@@ -1,6 +1,6 @@
 #include<iostream>
 #include<cstdio>
-
+#include "image.h"
 using namespace std;
 
 /*void getPalette(){
@@ -21,25 +21,24 @@ using namespace std;
     }
 }*/
 
-void createBinaryCode(string t) {
+void image::createBinaryCode(string t) {
   FILE *image;
   FILE *txt;
-  int byte, bytes[8];
+  int bytes[8];
+  int byte;
   image = fopen((t+".bmp").c_str(),"rb");
   txt = fopen(("out"+t+".txt").c_str(), "w");
 
   if (image != nullptr) {
     byte = fgetc(image);
-
     while (byte != EOF)
     {
         for(int i=0;i<8;i++) {
-            bytes[i] = byte&(1<<(7-i));
-            fputc(bytes[i], txt);
+            bytes[i] = byte&(1<<(7-i)) ? 1 : 0;
+            fputc(bytes[i] + '0', txt);
         }
-
         fputc(' ', txt);
-      byte = fgetc(image);
+        byte = fgetc(image);
     }
   }
   else {
@@ -49,7 +48,7 @@ void createBinaryCode(string t) {
   fclose(txt);
 }
 
-char byteFromText(int* text) {
+char image::byteFromText(int* text) {
     char result=0;
       for(int i=0;i<8;i++)
       {
@@ -61,9 +60,9 @@ char byteFromText(int* text) {
       return result;
 }
 
-void createImage(string t) {
+void image::createImage(string t) {
     FILE* txt = fopen(("out"+t+".txt").c_str(), "r");
-    FILE* image = fopen("res.bmp", "wb");
+    FILE* image = fopen(("res"+t+".bmp").c_str(), "wb");
     int sym[8], c;
     if (txt != nullptr) {
         for (int j = 0; j < 8; j++){
@@ -72,7 +71,7 @@ void createImage(string t) {
                 break;
             sym[j] = c;
         }
-
+        c = fgetc(txt);
         while (c != EOF) {
             fputc(byteFromText(sym), image);
             for (int j = 0; j < 8; j++){
@@ -81,14 +80,11 @@ void createImage(string t) {
                     break;
                 sym[j] = c;
             }
+            c = fgetc(txt);
         }
     }
     fclose(image);
     fclose(txt);
 }
-int main()
-{
-    createBinaryCode("8");
 
 
-}

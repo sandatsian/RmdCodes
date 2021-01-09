@@ -14,6 +14,7 @@
 #include <sys/timeb.h>
 #include <windows.h>
 #include <functional>
+#include "image.h"
 
 using namespace std;
 #pragma optimize( "", off )
@@ -1804,79 +1805,10 @@ string word;
 	file.close();
 }
 
-void createBinaryCode(string t) {
-  FILE *image;
-  FILE *txt;
-  int byte;
-  image = fopen((t+".bmp").c_str(),"rb");
-  txt = fopen(("out"+t+".txt").c_str(), "w");
-  if (image != nullptr) {
-    byte = fgetc(image);
-    while (byte != EOF)
-    {
-      for(int i=0;i<8;i++)
-      {
-        if(byte&(1<<(7-i)))
-        {
-          fputc('1', txt);
-        }
-        else
-        {
-          fputc('0', txt);
-        }
 
-      }
 
-    }
-  }
-  else {
-    cout << "Cannot open file\n";
-  }
-  fclose(image);
-  fclose(txt);
-}
-
-char byteFromText(int* text) {
-    char result=0;
-      for(int i=0;i<8;i++)
-      {
-        if(text[i]=='1')
-        {
-          result |= (1<< (7-i) );
-        }
-      }
-      return result;
-}
-
-void createImage(string t) {
-    FILE* txt = fopen(("out"+t+".txt").c_str(), "r");
-    FILE* image = fopen("res.bmp", "wb");
-    int sym[8], c;
-    if (txt != nullptr) {
-        for (int j = 0; j < 8; j++){
-            c = fgetc(txt);
-            if (c == EOF)
-                break;
-            sym[j] = c;
-        }
-
-        while (c != EOF) {
-            fputc(byteFromText(sym), image);
-            for (int j = 0; j < 8; j++){
-                c = fgetc(txt);
-                if (c == EOF)
-                    break;
-                sym[j] = c;
-            }
-        }
-    }
-    fclose(image);
-  fclose(txt);
-}
-int main() {
-    //createBinaryCode("7");
-    //createImage("1");
-	int scdc_L=0;
+void process() {
+    int scdc_L=0;
 	int ilen=1000;
 	double harm=0,u=0,su=100;
 	unsigned int i, j, maxi4 = 100000, iter = 100, uu = 0, size, t, v, min_i, min_j, min_x, min_z, min_y;
@@ -1926,6 +1858,13 @@ int main() {
 	cout<<"uu="<<uu*2<<' '<<u<<"\n";
 	cout << *out235 << endl;
 	getch();
+}
+
+int main() {
+    image im;
+    im.createBinaryCode("2");
+    im.createImage("2");
+    //process();
 }
 
 
