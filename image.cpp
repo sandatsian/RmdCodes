@@ -4,29 +4,13 @@
 #include <bitset>
 using namespace std;
 
-/*void getPalette(){
-    Graphics::Bitmap->LoadFromFile("1.bmp");
-    int m = Bitmap->Canvas->Pixels.size();
-    int n = Bitmap->Canvas->Pixels[0].size();
-    FILE* txt = fopen("out.txt", "w");
-    ofstream out("out.txt");
-    out.open("out.txt");
-    for (int x = 0; x < m; x++){
-        for (int y = 0; y < n; y++){
-            TColor PixelColor= Bitmap->Canvas->Pixels[x][y];
-        int R = GetRValue(PixelColor);
-        int G = GetGValue(PixelColor);
-        int B = GetBValue(PixelColor);
-            out << R << ' ' << G << ' ' << B << endl;
-        }
-    }
-}*/
-
 // using diffs
 void image::putToTxtDiffs(int byte, FILE* txt){
-    //cout << bitset<sizeof(byte) * CHAR_BIT>(byte) << " ";
-    for(int i=0;i<9;i++) {
-            fputc((byte&(1<<(8-i)) ? 1 : 0) + '0', txt);
+    char sign = byte >=0 ? '0' : '1';
+    fputc(sign, txt);
+    byte = abs(byte);
+    for(int i=0;i<8;i++) {
+            fputc((byte&(1<<(7-i)) ? 1 : 0) + '0', txt);
         }
     fputc(' ', txt);
 }
@@ -54,11 +38,11 @@ void image::createBinaryCodeDiffs(string t) {
     int r1= fgetc(image), b1=fgetc(image), g1=fgetc(image);
     while (!(r1 == EOF && g1== EOF && b1==EOF)) {
         if (r1 != EOF)
-            putToTxtDiffs(r - r1, txt);
+            putToTxtDiffs(r1 - r, txt);
         if (g1 != EOF)
-            putToTxtDiffs(g - g1, txt);
+            putToTxtDiffs(g1 - g, txt);
         if (b1 != EOF)
-            putToTxtDiffs(b - b1, txt);
+            putToTxtDiffs(b1 - b, txt);
         r = r1, b = b1, g = g1;
         r1 = fgetc(image);
         g1 = fgetc(image);
@@ -82,7 +66,7 @@ int image::byteFromTextDiffs(int* text, int num) {
         }
       }
       if (text[0] == '1')
-        result -= 256;
+        result *= (-1);
       return result + num;
 }
 
@@ -100,11 +84,23 @@ void image::createImageDiffs(string t) {
                 r[j] = c;
             }
             c = fgetc(txt); // get space symbol
-            fputc(byteFromText(r), image);
-            cout << (int)byteFromText(r) << ' ';
+            fputc(byteFromTextDiffs(r, 0), image);
             am++;
         }
-
+        am = 0;
+        while (am < 3 && c != EOF) {
+            for (int j = 0; j < 9; j++){
+                c = fgetc(txt);
+                if (c == EOF)
+                    break;
+                r[j] = c;
+            }
+            c = fgetc(txt); // get space symbol
+            fputc(byteFromTextDiffs(r, 0), image);
+            num[am] = byteFromTextDiffs(r, 0);
+            am++;
+        }
+        cout << num[0] << num[1] << num[2] << endl;
         while (c != EOF) {
             for (int j = 0; j < 9; j++){
                 c = fgetc(txt);
@@ -132,8 +128,7 @@ void image::createImageDiffs(string t) {
             num[0] = byteFromTextDiffs(r, num[0]);
             num[1] = byteFromTextDiffs(g, num[1]);
             num[2] = byteFromTextDiffs(b, num[2]);
-            //cout << bitset<sizeof(num[0]) * CHAR_BIT>(num[0]) << ' ';
-            cout << num[0] <<' ' << num[1] << ' ' << num[3]<<' ';
+            //cout << num[0] <<' ' << num[1] << ' ' << num[2]<<' ';
             fputc(num[0], image);
             fputc(num[1], image);
             fputc(num[2], image);
@@ -203,7 +198,6 @@ int image::byteFromText(int* text) {
       return result;
 }
 void image::putToTxt(int byte, FILE* txt){
-    //cout << bitset<sizeof(byte) * CHAR_BIT>(byte) << " ";
     for(int i=0;i<8;i++) {
             fputc((byte&(1<<(7-i)) ? 1 : 0) + '0', txt);
         }

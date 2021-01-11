@@ -1861,69 +1861,10 @@ void process(char* fname) {
 
 int main() {
     image im;
-    string num = "3";
+    string num = "9";
     //im.createBinaryCode(num);
     //im.createImage(num);
     im.createBinaryCodeDiffs(num);
     im.createImageDiffs(num);
-    process("out3.txt");
+    process("out9.txt");
 }
-
-
-/*int main() {
-struct _timeb stime,etime;
-int x=151,y[243][18],n=151,m=7,j,f1,f2,f3;
-char TEXT1[100];
-char kk=5;
-int TAB[100];
-double tdiff;
-initTAB();
-
-	QueryPerformanceFrequency(&tfreq);
-	//for(j=0;j<10;j++)
-	for(int i=0;i<10;i++) {
-		QueryPerformanceCounter(&tstart);
-		__asm{
-			mov esi,i
-			mov	bl, TEXT1[kk]
-mov	eax,TAB[ebx]
-mov	dx,ax
-	mov	cl,al
- btr eax,32
- jc r3
-		shrd	edx,esi,cl
- btr eax,31
- jc r2
-			mov 	edx,eax
-			shr 	edx,16
-			mov 	dh,0
-			mov 	edx,eax
- btr eax,30
- jc r1
-				shr 	edx,11
-				shr 	eax,24
-				and 	eax,0x00000003
-r1:				shr 	edx,8
-			mov 	bx,ax
-			and 	bx,0x00e0
-			shl 	bx,3
-r2:			mov 	edx,eax
-			and 	edx,0x00ff0000
-			mov 	ebx,eax
-			and 	ebx,0x000000e0
-			shl 	ebx,3
-
-r3:		shld	esi,edx,cl
-		mov 	ebx,eax
-		and 	ebx,0x07000000
-		shr 	ebx,16
-		}
-		QueryPerformanceCounter(&tend);
-		time1+=(float)(tend.QuadPart - tstart.QuadPart)/tfreq.QuadPart;
-	}
-	printf("time: %f",time1);
-	getch();
-		}
-}*/
-
-
