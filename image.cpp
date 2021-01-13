@@ -100,7 +100,6 @@ void image::createImageDiffs(string t) {
             num[am] = byteFromTextDiffs(r, 0);
             am++;
         }
-        cout << num[0] << num[1] << num[2] << endl;
         while (c != EOF) {
             for (int j = 0; j < 9; j++){
                 c = fgetc(txt);
@@ -125,6 +124,7 @@ void image::createImageDiffs(string t) {
             c = fgetc(txt); // get space symbol
             if (c == EOF)
                     break;
+
             num[0] = byteFromTextDiffs(r, num[0]);
             num[1] = byteFromTextDiffs(g, num[1]);
             num[2] = byteFromTextDiffs(b, num[2]);
@@ -202,4 +202,30 @@ void image::putToTxt(int byte, FILE* txt){
             fputc((byte&(1<<(7-i)) ? 1 : 0) + '0', txt);
         }
     fputc(' ', txt);
+}
+
+void image::createImageDecoding(string t, unsigned char* codes_scdc, int Nwords) {
+    FILE* image = fopen(("res"+t+".bmp").c_str(), "wb");
+    int num[3] = {0,0,0};
+        int i = 0;
+        while(i < shift) {
+            fputc((int)codes_scdc[i], image);
+            i++;
+        }
+        while (i < shift+3) {
+            fputc((int)codes_scdc[i], image);
+            num[i-shift] = (int)codes_scdc[i];
+            i++;
+        }
+        while (i < Nwords) {
+            num[0] += (int)codes_scdc[i];
+            num[1] += (int)codes_scdc[i+1];
+            num[2] += (int)codes_scdc[i+2];
+            //cout << num[0] <<' ' << num[1] << ' ' << num[2]<<' ';
+            fputc(num[0], image);
+            fputc(num[1], image);
+            fputc(num[2], image);
+            i+=3;
+        }
+    fclose(image);
 }

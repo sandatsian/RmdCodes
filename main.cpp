@@ -1832,6 +1832,8 @@ void process(char* fname) {
 	/*for (auto it = i235_map_sorted.begin(); it !=i235_map_sorted.end(); it++) {
 		cout << it->first <<  ' ' << it->second << endl;
 	}*/
+	/*for (int i=0; i < Nwords; i++)
+        cout << ranks[i] << ' ';*/
 
 	encodeI235(Nwords,ranks);					// generate the R2x code
 		//decodeI235_1(ilen+1);
@@ -1861,10 +1863,11 @@ void process(char* fname) {
 
 int main() {
     image im;
-    string num = "9";
+    string num = "8";
     //im.createBinaryCode(num);
     //im.createImage(num);
     im.createBinaryCodeDiffs(num);
     im.createImageDiffs(num);
-    process("out9.txt");
+    //im.createImageDecoding(num, codes_scdc, Nwords);
+    process("out8.txt");
 }
