@@ -1691,7 +1691,7 @@ uint* e=(uint*)experT;
 }
 
 
-int k[20]={0,1,21}; //numbers which are not delimiters, the last = biggest delimiter+1
+int k[20]={0,1,100}; //numbers which are not delimiters, the last = biggest delimiter+1
 int kmax=3,Lmin=3; //number of elements in the array k; length of the shortest codeword
 
 void gen_reverse() {
@@ -1805,14 +1805,21 @@ string word;
 	file.close();
 }
 
+void createEncodedFile(string t) {
+    FILE* out = fopen(("res"+t+".bmp").c_str(), "wb");
+    for (int i = 0; i < cur_byte; i++){
+        fputc(codes[i], out);
+    }
+    fclose(out);
+}
 
-
-void process(char* fname) {
+void process(string num) {
     int scdc_L=0;
 	int ilen=1000;
 	double harm=0,u=0,su=100;
 	unsigned int i, j, maxi4 = 100000, iter = 100, uu = 0, size, t, v, min_i, min_j, min_x, min_z, min_y;
-	//char* fname="kjv_true_formatted.txt";
+	string str="out"+num+".txt";
+	char* fname = &str[0];
 		QueryPerformanceFrequency(&tfreq);
 		size = word_frequences(fname);		// get the word frequences in the text
 		gen_reverse();		// generate the reverse multidelimiter codeword set
@@ -1831,12 +1838,13 @@ void process(char* fname) {
 
 	/*for (auto it = i235_map_sorted.begin(); it !=i235_map_sorted.end(); it++) {
 		cout << it->first <<  ' ' << it->second << endl;
-	}*/
-	/*for (int i=0; i < Nwords; i++)
+	}
+	for (int i=0; i < Nwords; i++)
         cout << ranks[i] << ' ';*/
 
 	encodeI235(Nwords,ranks);					// generate the R2x code
 		//decodeI235_1(ilen+1);
+    createEncodedFile(num); // creates encoded file
 
 	cout <<"size:"<<size<<"different words:"<<diff_words<<"\n"<<"I235 bytes: "<<cur_byte<<", I235 av codeword length: "<<(float)cur_byte*8/Nwords<<"; entropy="<<entropy<<"\n";
 	create_tables();
@@ -1863,11 +1871,9 @@ void process(char* fname) {
 
 int main() {
     image im;
-    string num = "8";
-    //im.createBinaryCode(num);
-    //im.createImage(num);
+    string num = "16";
     im.createBinaryCodeDiffs(num);
-    im.createImageDiffs(num);
+    //im.createImageDiffs(num);
     //im.createImageDecoding(num, codes_scdc, Nwords);
-    process("out8.txt");
+    process(num);
 }
