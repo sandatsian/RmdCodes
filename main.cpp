@@ -1872,8 +1872,11 @@ void process(string num) {
 int main() {
     image im;
     string num = "16";
+    /*im.getBytes(num);
+    im.createBinaryCodeSnake();
+    im.putToTxtSnake(num);*/
     im.createBinaryCodeDiffs(num);
-    //im.createImageDiffs(num);
+    im.createImageDiffs(num);
     //im.createImageDecoding(num, codes_scdc, Nwords);
     process(num);
 }

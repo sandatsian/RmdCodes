@@ -4,15 +4,83 @@
 #include <bitset>
 using namespace std;
 
+// standard
+void image::createBinaryCode(string t) {
+FILE *image;
+  FILE *txt;
+  int byte, am = 0;
+  image = fopen((t+".bmp").c_str(),"rb");
+  txt = fopen(("out"+t+".txt").c_str(), "w");
+
+  if (image != nullptr) {
+    byte = fgetc(image);
+    while (byte != EOF)
+    {
+        putToTxt(byte, txt);
+        byte = fgetc(image);
+    }
+  }
+  else {
+    cout << "Cannot open file\n";
+  }
+  fclose(image);
+  fclose(txt);
+}
+void image::createImage(string t) {
+    FILE* txt = fopen(("out"+t+".txt").c_str(), "r");
+    FILE* image = fopen(("res"+t+".bmp").c_str(), "wb");
+    int sym[8], c;
+    if (txt != nullptr) {
+        for (int j = 0; j < 8; j++){
+            c = fgetc(txt);
+            if (c == EOF)
+                break;
+            sym[j] = c;
+        }
+        c = fgetc(txt);
+        while (c != EOF) {
+            fputc(byteFromText(sym), image);
+            for (int j = 0; j < 8; j++){
+                c = fgetc(txt);
+                if (c == EOF)
+                    break;
+                sym[j] = c;
+            }
+            c = fgetc(txt);
+        }
+    }
+    fclose(image);
+    fclose(txt);
+}
+
+int image::byteFromText(int* text) {
+    int result=0;
+      for(int i=0;i<8;i++)
+      {
+        if(text[i]=='1')
+        {
+          result |= (1<< (7-i) );
+        }
+      }
+      return result;
+}
+void image::putToTxt(int byte, FILE* txt){
+    for(int i=0;i<8;i++) {
+            fputc((byte&(1<<(7-i)) ? 1 : 0) + '0', txt);
+        }
+    fputc(' ', txt);
+}
+
 // using diffs
-void image::putToTxtDiffs(int byte, FILE* txt){
+void image::putToTxtDiffs(int byte, FILE* txt, bool space){
     char sign = byte >=0 ? '0' : '1';
     fputc(sign, txt);
     byte = abs(byte);
     for(int i=0;i<8;i++) {
             fputc((byte&(1<<(7-i)) ? 1 : 0) + '0', txt);
         }
-    fputc(' ', txt);
+    if (space)
+        fputc(' ', txt);
 }
 
 void image::createBinaryCodeDiffs(string t) {
@@ -28,21 +96,20 @@ void image::createBinaryCodeDiffs(string t) {
     {
         byte = fgetc(image);
         am++;
-        putToTxtDiffs(byte, txt);
+        putToTxtDiffs(byte, txt, false);
     }
-    //int r[MAX_SIZE], g[MAX_SIZE], b[MAX_SIZE];
     int r=fgetc(image),g=fgetc(image), b=fgetc(image);
-    putToTxtDiffs(r, txt);
-    putToTxtDiffs(g, txt);
-    putToTxtDiffs(b, txt);
+    putToTxtDiffs(r, txt, true);
+    putToTxtDiffs(g, txt, true);
+    putToTxtDiffs(b, txt, true);
     int r1= fgetc(image), b1=fgetc(image), g1=fgetc(image);
     while (!(r1 == EOF && g1== EOF && b1==EOF)) {
         if (r1 != EOF)
-            putToTxtDiffs(r1 - r, txt);
+            putToTxtDiffs(r1 - r, txt, true);
         if (g1 != EOF)
-            putToTxtDiffs(g1 - g, txt);
+            putToTxtDiffs(g1 - g, txt, true);
         if (b1 != EOF)
-            putToTxtDiffs(b1 - b, txt);
+            putToTxtDiffs(b1 - b, txt, true);
         r = r1, b = b1, g = g1;
         r1 = fgetc(image);
         g1 = fgetc(image);
@@ -138,72 +205,100 @@ void image::createImageDiffs(string t) {
     fclose(txt);
 }
 
-void image::createBinaryCode(string t) {
-FILE *image;
-  FILE *txt;
-  int byte, am = 0;
-  image = fopen((t+".bmp").c_str(),"rb");
-  txt = fopen(("out"+t+".txt").c_str(), "w");
+// snake
+void image::getBytes(string t) {
+    FILE *image;
+    FILE *txt;
+    int byte, am = 0;// width and height of image
+    image = fopen((t+".bmp").c_str(),"rb");
 
-  if (image != nullptr) {
-    byte = fgetc(image);
-    while (byte != EOF)
-    {
-        putToTxt(byte, txt);
-        byte = fgetc(image);
-    }
-  }
-  else {
-    cout << "Cannot open file\n";
-  }
-  fclose(image);
-  fclose(txt);
-}
-void image::createImage(string t) {
-    FILE* txt = fopen(("out"+t+".txt").c_str(), "r");
-    FILE* image = fopen(("res"+t+".bmp").c_str(), "wb");
-    int sym[8], c;
-    if (txt != nullptr) {
-        for (int j = 0; j < 8; j++){
-            c = fgetc(txt);
-            if (c == EOF)
-                break;
-            sym[j] = c;
-        }
-        c = fgetc(txt);
-        while (c != EOF) {
-            fputc(byteFromText(sym), image);
-            for (int j = 0; j < 8; j++){
-                c = fgetc(txt);
-                if (c == EOF)
-                    break;
-                sym[j] = c;
+    if (image != nullptr) {
+        byte = 0, w = 0, h = 0;
+        while (byte != EOF && am < shift)
+        {
+            byte = fgetc(image);
+            header.push_back(byte);
+            if (am > 17 && am < 22) {
+                w += (byte << 8*(am-18));
             }
-            c = fgetc(txt);
+            if (am > 21 && am < 26) {
+                h += (byte << 8*(am-22));
+            }
+            am++;
         }
+        cout << "width " << w << " height " << h << endl;
+        while (byte != EOF) {
+            r.push_back(byte);
+            byte = fgetc(image);
+            g.push_back(byte);
+            byte = fgetc(image);
+            b.push_back(byte);
+            byte = fgetc(image);
+        }
+        int k=0;
+
+    }
+    else {
+        cout << "Cannot open file\n";
     }
     fclose(image);
-    fclose(txt);
 }
 
-int image::byteFromText(int* text) {
-    int result=0;
-      for(int i=0;i<8;i++)
-      {
-        if(text[i]=='1')
-        {
-          result |= (1<< (7-i) );
+void image::createBinaryCodeSnake() {
+    rv.resize(h*w);
+    gv.resize(h*w);
+    bv.resize(h*w);
+    int d = 0;
+    for (int i=0;i <w+h-1; i++) {
+        if (i%2){
+            int x = i < w ? 0 : i-w+1;
+            int y = i < w? i : w-1;
+            while (x <h && y >= 0) {
+                rv[d] = r[x*w+y];
+                gv[d] = g[x*w+y];
+                bv[d] = b[x*w+y];
+                x++;
+                y--;
+                d++;
+            }
         }
-      }
-      return result;
-}
-void image::putToTxt(int byte, FILE* txt){
-    for(int i=0;i<8;i++) {
-            fputc((byte&(1<<(7-i)) ? 1 : 0) + '0', txt);
+        else {
+            int x = i < h ? i : h-1;
+            int y = i < h ? 0 : i-h+1;
+            while (x >= 0 && y < w) {
+                rv[d] = r[x*w+y];
+                gv[d] = g[x*w+y];
+                bv[d] = b[x*w+y];
+                x--;
+                y++;
+                d++;
+            }
         }
-    fputc(' ', txt);
+    }
 }
 
+void image::putToTxtSnake(string t) {
+    FILE* txt = fopen(("out"+t+".txt").c_str(), "w");
+    /*for (int i=0; i<shift; i++) {
+        putToTxtDiffs(header[i], txt, true);
+    }*/
+    putToTxtDiffs(rv[0], txt, true);
+    putToTxtDiffs(gv[0], txt, true);
+    putToTxtDiffs(bv[0], txt, true);
+
+    for (int i=0; i<h; i++){
+        for (int j=0; j<w; j++) {
+            if (i*w+j < w*h-1){
+                putToTxtDiffs(rv[i*w+j+1] - rv[i*w+j], txt, true);
+                putToTxtDiffs(gv[i*w+j+1] - gv[i*w+j], txt, true);
+                putToTxtDiffs(bv[i*w+j+1] - bv[i*w+j], txt, true);
+            }
+        }
+        //fputc('\n', txt);
+    }
+}
+
+// decoding (in process)
 void image::createImageDecoding(string t, unsigned char* codes_scdc, int Nwords) {
     FILE* image = fopen(("res"+t+".bmp").c_str(), "wb");
     int num[3] = {0,0,0};
