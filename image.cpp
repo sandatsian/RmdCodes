@@ -96,7 +96,7 @@ void image::createBinaryCodeDiffs(string t) {
     {
         byte = fgetc(image);
         am++;
-        putToTxtDiffs(byte, txt, false);
+        //putToTxtDiffs(byte, txt, false); // put header to file as one codeword
     }
     int r=fgetc(image),g=fgetc(image), b=fgetc(image);
     putToTxtDiffs(r, txt, true);

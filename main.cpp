@@ -13,6 +13,7 @@
 #include <fstream>
 #include <sys/timeb.h>
 #include <windows.h>
+#include <fstream>
 #include <functional>
 #include "image.h"
 
@@ -1750,6 +1751,15 @@ int word_frequences(char* s) {
 		entropy-=pi*(long double)log((long double)pi)/(long double)log((long double)2);
 	}
 
+    // put frequencies to file
+    ofstream fo("freqs13.txt");
+    for (auto it = freq_i235.begin(); it != freq_i235.end(); it++) {
+        fo << it->second <<  ' ' << it->first << endl;
+    }
+
+    fo.close();
+    // end freq
+
 	for(it1=freq_i235.end(),it1--,i=0;it1!=freq_i235.begin();it1--,i++) {
 		i235_map_sorted.insert(make_pair(it1->second,i)); //<word of text,number>
 		Dict_i235[i]=it1->second;
@@ -1871,12 +1881,12 @@ void process(string num) {
 
 int main() {
     image im;
-    string num = "16";
-    /*im.getBytes(num);
+    string num = "13";
+    im.getBytes(num);
     im.createBinaryCodeSnake();
-    im.putToTxtSnake(num);*/
-    im.createBinaryCodeDiffs(num);
-    im.createImageDiffs(num);
+    im.putToTxtSnake(num);
+    /*im.createBinaryCodeDiffs(num);
+    im.createImageDiffs(num);*/
     //im.createImageDecoding(num, codes_scdc, Nwords);
     process(num);
 }
