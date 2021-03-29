@@ -96,7 +96,7 @@ void image::createBinaryCodeDiffs(string t) {
     {
         byte = fgetc(image);
         am++;
-        //putToTxtDiffs(byte, txt, false); // put header to file as one codeword
+        putToTxtDiffs(byte, txt, false); // put header to file as one codeword
     }
     int r=fgetc(image),g=fgetc(image), b=fgetc(image);
     putToTxtDiffs(r, txt, true);
@@ -106,9 +106,12 @@ void image::createBinaryCodeDiffs(string t) {
     while (!(r1 == EOF && g1== EOF && b1==EOF)) {
         if (r1 != EOF)
             putToTxtDiffs(r1 - r, txt, true);
+            //rv.push_back(r1-r);
         if (g1 != EOF)
             putToTxtDiffs(g1 - g, txt, true);
+            //gv.push_back(g1-g);
         if (b1 != EOF)
+            //bv.push_back(b1-b);
             putToTxtDiffs(b1 - b, txt, true);
         r = r1, b = b1, g = g1;
         r1 = fgetc(image);

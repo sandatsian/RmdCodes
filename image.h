@@ -7,6 +7,7 @@ private:
     int MAX_SIZE = 10E8;
     int h;
     int w;
+    int fullSize;
     vector<int> header;
     vector<int> r;
     vector<int> g;
@@ -23,7 +24,7 @@ public:
     // with diffs
     int byteFromTextDiffs(int* text, int num);
     void createBinaryCodeDiffs(string t);
-    void createImageDiffs(string t);
+    void createImageDiffs(string t); // puts values to out.txt
     void putToTxtDiffs(int, FILE*, bool);
     // walk by diagonals
     void getBytes(string t);

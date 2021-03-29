@@ -1258,7 +1258,7 @@ char x;
 	/*for(int i=0;i<len;i++) {
         cout << ranks[i] << ' ';
 	}*/
-	cout<<"Text to ranks done";
+	cout<<"Text to ranks done\n";
 	Nwords=i;
 }
 
@@ -1692,13 +1692,13 @@ uint* e=(uint*)experT;
 }
 
 
-int k[20]={0,1,100}; //numbers which are not delimiters, the last = biggest delimiter+1
-int kmax=3,Lmin=3; //number of elements in the array k; length of the shortest codeword
+int k[20]={0,2,4,6,8,10,12}; //numbers which are not delimiters, the last = biggest delimiter+1
+int kmax=7,Lmin=2; //number of elements in the array k; length of the shortest codeword
 
 void gen_reverse() {
     int L,n,i,j,L1_long=-1,L1_long_prev=-1,t=2;
     uint seq=0,s=0;
-	for(L=3,n=0;L<Lmax+8 && n<=max_i235;L++) {
+	for(L=2,n=0;L<Lmax+8 && n<=max_i235;L++) {
 		nl[L]=n;
 		//cout<<"L="<<L-1<<"; Cn="<<n<<" s="<<s<<"\n";
 		for(i=0;L-k[i]>Lmin && i<kmax;i++) {
@@ -1728,6 +1728,7 @@ void gen_reverse() {
 
 int word_frequences(char* s) {
 	double pi;
+	// fill i235_map from file
 	string word;
 	int size=0;
 	ifstream file(s);
@@ -1739,6 +1740,7 @@ int word_frequences(char* s) {
 			i235_map.insert(make_pair(word,1));
 		size++;
 	}
+
 	int i=0;
 	multimap<int,string> freq_i235;
 	map<string,int> :: iterator it;
@@ -1752,12 +1754,12 @@ int word_frequences(char* s) {
 	}
 
     // put frequencies to file
-    ofstream fo("freqs13.txt");
+    /*ofstream fo("freqs13.txt");
     for (auto it = freq_i235.begin(); it != freq_i235.end(); it++) {
         fo << it->second <<  ' ' << it->first << endl;
     }
 
-    fo.close();
+    fo.close();*/
     // end freq
 
 	for(it1=freq_i235.end(),it1--,i=0;it1!=freq_i235.begin();it1--,i++) {
@@ -1827,11 +1829,11 @@ void process(string num) {
     int scdc_L=0;
 	int ilen=1000;
 	double harm=0,u=0,su=100;
-	unsigned int i, j, maxi4 = 100000, iter = 100, uu = 0, size, t, v, min_i, min_j, min_x, min_z, min_y;
+	unsigned int i, j, maxi4 = 100000, iter = 100, uu = 0, Size, t, v, min_i, min_j, min_x, min_z, min_y;
 	string str="out"+num+".txt";
 	char* fname = &str[0];
 		QueryPerformanceFrequency(&tfreq);
-		size = word_frequences(fname);		// get the word frequences in the text
+		Size = word_frequences(fname);		// get the word frequences in the text
 		gen_reverse();		// generate the reverse multidelimiter codeword set
 		formT2351();		// preprocess table for the fast decoding method
 
@@ -1848,7 +1850,8 @@ void process(string num) {
 
 	/*for (auto it = i235_map_sorted.begin(); it !=i235_map_sorted.end(); it++) {
 		cout << it->first <<  ' ' << it->second << endl;
-	}
+	}*/
+	/*
 	for (int i=0; i < Nwords; i++)
         cout << ranks[i] << ' ';*/
 
@@ -1856,7 +1859,7 @@ void process(string num) {
 		//decodeI235_1(ilen+1);
     createEncodedFile(num); // creates encoded file
 
-	cout <<"size:"<<size<<"different words:"<<diff_words<<"\n"<<"I235 bytes: "<<cur_byte<<", I235 av codeword length: "<<(float)cur_byte*8/Nwords<<"; entropy="<<entropy<<"\n";
+	cout <<"size:"<<Size<<"different words:"<<diff_words<<"\n"<<"I235 bytes: "<<cur_byte<<", I235 av codeword length: "<<(float)cur_byte*8/Nwords<<"; entropy="<<entropy<<"\n";
 	create_tables();
 	scdc_L=rpbc_encode(Nwords,ranks,codes_scdc);
 	cout<<"S="<<S<<" scdc_L= "<<scdc_L<<" SCDC av codeword length: "<<(float)scdc_L*8/Nwords<<"\n";
@@ -1881,12 +1884,12 @@ void process(string num) {
 
 int main() {
     image im;
-    string num = "13";
-    im.getBytes(num);
+    string num = "18";
+    /*im.getBytes(num);
     im.createBinaryCodeSnake();
-    im.putToTxtSnake(num);
-    /*im.createBinaryCodeDiffs(num);
-    im.createImageDiffs(num);*/
+    im.putToTxtSnake(num);*/
+    im.createBinaryCodeDiffs(num);
+    //im.createImageDiffs(num);
     //im.createImageDecoding(num, codes_scdc, Nwords);
     process(num);
 }
